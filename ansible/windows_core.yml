@@ -1,0 +1,27 @@
+---
+
+- name: deploy domain joined windows server
+  hosts: windows_servers
+
+
+  tasks:
+
+    - name: set dns
+      win_dns_client:
+        adapter_names: ethernet 2
+        ipv4_addresses:
+          - 192.168.50.2
+          - 192.168.50.3
+  
+    - name: join domain
+      win_domain_membership:
+        hostname: "{{host_name}}"
+        dns_domain_name: ad.skoopycorp.com
+        domain_admin_user: administrator@ad.skoopycorp.com
+        domain_admin_password: vagrant
+        state: domain
+      register: domain_member
+
+    - name: reboot
+      win_reboot:
+      when: domain_member.changed

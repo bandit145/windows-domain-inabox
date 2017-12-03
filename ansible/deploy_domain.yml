@@ -1,0 +1,53 @@
+---
+- name: deploy domain controller
+  hosts: 192.168.50.2
+
+
+  tasks:
+
+    - name: set host name
+      win_shell: if($env:computername -ne "DC1"){Rename-Computer -NewName dc1}
+      args:
+        executable: powershell
+
+    - name: install features
+      win_feature:
+        name: "{{item}}"
+        state: present
+      with_items:
+        - ad-domain-services
+        - dns
+      register: features
+
+    - name: reboot if features installed
+      win_reboot:
+      when: features.changed
+
+    - name: set dns
+      win_dns_client:
+        adapter_names: ethernet 2
+        ipv4_addresses:
+          - "{{ansible_ip_addresses[2]}}"
+          - 127.0.0.1
+
+    - name: deploy domain
+      win_domain:
+        dns_domain_name: ad.skoopycorp.com
+        safe_mode_password: What a password!
+      register: domain_deploy
+
+    - name: final reboot
+      win_reboot:
+      when: domain_deploy.changed
+
+    - pause:
+        minutes: 6
+
+    - name: add wsman service principal to dc1
+      win_shell: Set-ADComputer dc1 -ServicePrincipalNames @{Add="{{item}}"}
+      args:
+        executable: powershell
+      when: domain_deploy.changed
+      with_items:
+        - WSMAN/DC1
+        - WSMAN/dc1.ad.skoopycorp.com

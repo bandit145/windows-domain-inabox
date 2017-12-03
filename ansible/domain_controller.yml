@@ -1,0 +1,60 @@
+---
+
+- name: deploy domain controller
+  hosts: 192.168.50.3
+
+  tasks:
+
+    - name: install features
+      win_feature:
+        name: "{{item}}"
+        state: present
+      with_items:
+        - ad-domain-services
+        - dns
+
+    - name: set dns
+      win_dns_client:
+        adapter_names: ethernet 2
+        ipv4_addresses:
+          - 192.168.50.2
+          - "{{ansible_ip_addresses[2]}}"
+          - 127.0.0.1
+
+    - name: join domain
+      win_domain_membership:
+        hostname: dc2
+        dns_domain_name: ad.skoopycorp.com
+        domain_admin_user: administrator@ad.skoopycorp.com
+        domain_admin_password: vagrant
+        state: domain
+      register: domain_member
+
+    - name: reboot
+      win_reboot:
+      when: domain_member.changed
+
+    - name: become domain controller
+      win_domain_controller:
+        dns_domain_name: ad.skoopycorp.com
+        domain_admin_user: administrator@ad.skoopycorp.com
+        domain_admin_password: vagrant
+        safe_mode_password: What a password!
+        state: domain_controller
+      register: domain_con
+
+    - name: final reboot
+      win_reboot:
+      when: domain_con.changed
+
+    - pause:
+        minutes: 6
+
+    - name: add wsman service principal to dc2
+      win_shell: Set-ADComputer dc2 -ServicePrincipalNames @{Add="{{item}}"}
+      args:
+        executable: powershell
+      when: domain_con.changed
+      with_items:
+        - WSMAN/DC2
+        - WSMAN/dc2.ad.skoopycorp.com
