@@ -1,0 +1,12 @@
+192.168.50.2 ansible_winrm_server_cert_validation=ignore ansible_connection=winrm ansible_user=Administrator ansible_password=vagrant
+192.168.50.3 ansible_winrm_server_cert_validation=ignore ansible_connection=winrm ansible_user=Administrator ansible_password=vagrant
+
+[windows_servers]
+192.168.50.4 host_name=server1
+192.168.50.5 host_name=server2
+
+[windows_servers:vars]
+ansible_winrm_server_cert_validation=ignore 
+ansible_connection=winrm
+ansible_user=Administrator
+ansible_password=vagrant
