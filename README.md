@@ -1,2 +1,12 @@
 # windows-domain-inabox
-Just a vagrant config that spins up a windows domain
+This is a Vagrant project that spins up a small windows domain (two DCs and two member servers)
+
+
+## Requirements:
+
+Vagrant
+VirtualBox
+
+##Run:
+
+`vagrant up`
