@@ -7,6 +7,6 @@ This is a Vagrant project that spins up a small windows domain (two DCs and two 
 Vagrant
 VirtualBox
 
-##Run:
+## Run:
 
 `vagrant up`
