@@ -5,6 +5,7 @@ This is a Vagrant project that spins up a small windows domain (two DCs and two 
 ## Requirements:
 
 Vagrant
+
 VirtualBox
 
 ## Run:
