@@ -12,7 +12,14 @@
         ipv4_addresses:
           - 192.168.50.2
           - 192.168.50.3
-  
+
+    - name: add rsat tools
+      win_feature:
+        name: RSAT
+        state: present
+        include_sub_features: yes
+        include_managment_tools: yes
+
     - name: join domain
       win_domain_membership:
         hostname: "{{host_name}}"
