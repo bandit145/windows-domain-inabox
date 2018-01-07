@@ -13,3 +13,5 @@ VirtualBox
 ## Run:
 
 `vagrant up`
+
+Note: You will have to run `vagrant reload` to get the synced folders to reconnect after server1/2 are rebooted for their domain join.
