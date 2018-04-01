@@ -27,6 +27,19 @@
         include_sub_features: yes
         include_managment_tools: yes
 
+    - name: install laps client
+      win_package:
+        path: https://download.microsoft.com/download/C/7/A/C7AAD914-A8A6-4904-88A1-29E657445D03/LAPS.x64.msi
+        product_id: "{EA8CB806-C109-4700-96B4-F1F268E5036C}"
+        arguments: /quiet
+        state: present
+
+    - name: install laps powershell module
+      win_unzip:
+        src: C:\vagrant\ansible\files\AdmPwd.PS.zip
+        dest: C:\Windows\system32\WindowsPowerShell\v1.0\Modules\AdmPwd.PS\
+        creates: C:\Windows\system32\WindowsPowerShell\v1.0\Modules\AdmPwd.PS\
+
     - name: join domain
       win_domain_membership:
         hostname: "{{host_name}}"

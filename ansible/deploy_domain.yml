@@ -23,21 +23,6 @@
       win_reboot:
       when: features.changed
 
-
-    - name: set dns ethernet
-      win_dns_client:
-        adapter_names: ethernet
-        ipv4_addresses:
-          - "{{ansible_ip_addresses[2]}}"
-          - 127.0.0.1
-
-    - name: set dns ethernet 2
-      win_dns_client:
-        adapter_names: ethernet 2
-        ipv4_addresses:
-          - "{{ansible_ip_addresses[2]}}"
-          - 127.0.0.1
-
     - name: deploy domain
       win_domain:
         dns_domain_name: ad.skoopycorp.com
@@ -59,3 +44,23 @@
       with_items:
         - WSMAN/DC1
         - WSMAN/dc1.ad.skoopycorp.com
+
+    - name: add server ou
+      win_shell: New-ADOrganizationalUnit -Name servers -Path "dc=ad,dc=skoopycorp,dc=com"
+      args:
+        executable: powershell
+      when: domain_deploy.changed
+
+    - name: set dns ethernet
+      win_dns_client:
+        adapter_names: ethernet
+        ipv4_addresses:
+          - "{{ansible_ip_addresses[2]}}"
+          - 127.0.0.1
+
+    - name: set dns ethernet 2
+      win_dns_client:
+        adapter_names: ethernet 2
+        ipv4_addresses:
+          - "{{ansible_ip_addresses[2]}}"
+          - 127.0.0.1

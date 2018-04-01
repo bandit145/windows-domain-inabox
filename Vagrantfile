@@ -38,5 +38,6 @@ Vagrant.configure("2") do |config|
 		ansible.vm.provision "shell", inline: "cd /vagrant/ansible && ansible-playbook deploy_domain.yml -i inventory"
 		ansible.vm.provision "shell", inline: "cd /vagrant/ansible && ansible-playbook domain_controller.yml -i inventory"
 		ansible.vm.provision "shell", inline: "cd /vagrant/ansible && ansible-playbook windows_core.yml -i inventory"
+		ansible.vm.provision "shell", inline: "cd /vagrant/ansible && sudo ansible-playbook ansible_server.yml"
 	end
 end
