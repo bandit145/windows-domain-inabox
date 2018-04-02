@@ -37,7 +37,7 @@
     - name: install laps powershell module
       win_unzip:
         src: C:\vagrant\ansible\files\AdmPwd.PS.zip
-        dest: C:\Windows\system32\WindowsPowerShell\v1.0\Modules\AdmPwd.PS\
+        dest: C:\Windows\system32\WindowsPowerShell\v1.0\Modules\
         creates: C:\Windows\system32\WindowsPowerShell\v1.0\Modules\AdmPwd.PS\
 
     - name: join domain

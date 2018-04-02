@@ -35,6 +35,7 @@
 
     - pause:
         minutes: 6
+      when: domain_deploy.changed
 
     - name: add wsman service principal to dc1
       win_shell: Set-ADComputer dc1 -ServicePrincipalNames @{Add="{{item}}"}
@@ -45,8 +46,36 @@
         - WSMAN/DC1
         - WSMAN/dc1.ad.skoopycorp.com
 
+    - name: copy policy defs zip
+      win_copy:
+        src: files/PolicyDefinitions.zip
+        dest: C:\PolicyDefinitions.zip
+
+    - name: adm pwd module
+      win_copy:
+        src: AdmPwd.PS.zip
+        dest: C:\
+
+    - name: install laps powershell module
+      win_unzip:
+        src: C:\AdmPwd.PS.zip
+        dest: C:\Windows\system32\WindowsPowerShell\v1.0\Modules\
+        creates: C:\Windows\system32\WindowsPowerShell\v1.0\Modules\AdmPwd.PS\
+
+    - name: unzip gpo shared policy defs
+      win_unzip:
+        src: C:\PolicyDefinitions.zip
+        dest: C:\Windows\SYSVOL\sysvol\ad.skoopycorp.com\policies\
+        creates: C:\Windows\SYSVOL\sysvol\ad.skoopycorp.com\policies\PolicyDefinitions
+
     - name: add server ou
       win_shell: New-ADOrganizationalUnit -Name servers -Path "dc=ad,dc=skoopycorp,dc=com"
+      args:
+        executable: powershell
+      when: domain_deploy.changed
+
+    - name: deploy laps AD entries
+      win_shell: Update-AdmPwdADSchema ; Set-AdmPwdComputerSelfPermission -Identity "ou=servers,dc=ad,dc=skoopycorp,dc=com"
       args:
         executable: powershell
       when: domain_deploy.changed

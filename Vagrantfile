@@ -33,6 +33,7 @@ Vagrant.configure("2") do |config|
 	config.vm.define "ansible_server" do |ansible|
 		ansible.vm.box = "bento/centos-7.4"
 		ansible.vm.network "private_network", ip: "192.168.50.6"
+		ansible.vm.provision "shell", inline: "sudo service network restart"
 		ansible.vm.provision "shell", inline: "sudo yum -y install epel-release && sudo yum -y install python-pip"
 		ansible.vm.provision "shell", inline: "sudo pip install ansible pywinrm"
 		ansible.vm.provision "shell", inline: "cd /vagrant/ansible && ansible-playbook deploy_domain.yml -i inventory"

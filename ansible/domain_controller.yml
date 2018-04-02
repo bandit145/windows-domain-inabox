@@ -58,6 +58,7 @@
 
     - pause:
         minutes: 6
+      when: domain_con.changed
 
     - name: add wsman service principal to dc2
       win_shell: Set-ADComputer dc2 -ServicePrincipalNames @{Add="{{item}}"}

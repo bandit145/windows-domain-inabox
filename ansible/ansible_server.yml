@@ -38,7 +38,7 @@
         executable: pip2
 
     - name: join domain
-      shell: echo "vagrant" | realm join ad.skoopycorp.com -U Administrator --computer-ou OU=servers,DC=ad,DC=skoopycorp,DC=com
+      shell: echo "vagrant" | realm join AD.SKOOPYCORP.COM -U Administrator --computer-ou OU=servers,DC=ad,DC=skoopycorp,DC=com
       args:
         creates: /etc/sssd/sssd.conf
 
