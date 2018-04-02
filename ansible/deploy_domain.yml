@@ -75,9 +75,12 @@
       when: domain_deploy.changed
 
     - name: deploy laps AD entries
-      win_shell: Update-AdmPwdADSchema ; Set-AdmPwdComputerSelfPermission -Identity "ou=servers,dc=ad,dc=skoopycorp,dc=com"
+      win_shell: "{{item}}"
       args:
         executable: powershell
+      with_items:
+        - Update-AdmPwdADSchema
+        - Set-AdmPwdComputerSelfPermission -Identity "ou=servers,dc=ad,dc=skoopycorp,dc=com"
       when: domain_deploy.changed
 
     - name: set dns ethernet
