@@ -15,20 +15,14 @@
 
     - name: set dns on ethernet
       win_dns_client:
-        adapter_names: ethernet
+        adapter_names: "{{item}}"
         ipv4_addresses:
           - 192.168.50.2
           - "{{ansible_ip_addresses[2]}}"
           - 127.0.0.1
-
-    - name: set dns on ethernet 2
-      win_dns_client:
-        adapter_names: ethernet 2
-        ipv4_addresses:
-          - 192.168.50.2
-          - "{{ansible_ip_addresses[2]}}"
-          - 127.0.0.1
-
+      with_items:
+        - ethernet
+        - ethernet 2
 
     - name: join domain
       win_domain_membership:

@@ -1,0 +1,3 @@
+[submodule "scripts/Backup-DomainGroupPolicies"]
+	path = scripts/Backup-DomainGroupPolicies
+	url = https://github.com/bandit145/Backup-DomainGroupPolicies.git

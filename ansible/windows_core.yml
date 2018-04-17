@@ -8,18 +8,14 @@
 
     - name: set dns on ethernet
       win_dns_client:
-        adapter_names: ethernet
-        ipv4_addresses:
+        adapter_names: "{{item}}"
+        ipv4_addresses: 
           - 192.168.50.2
           - 192.168.50.3
-
-    - name: set dns on ethernet 2
-      win_dns_client:
-        adapter_names: ethernet 2
-        ipv4_addresses:
-          - 192.168.50.2
-          - 192.168.50.3
-
+      with_items:
+        - ethernet
+        - ethernet 2
+  
     - name: add rsat tools
       win_feature:
         name: RSAT
@@ -45,6 +41,7 @@
         hostname: "{{host_name}}"
         dns_domain_name: ad.skoopycorp.com
         domain_admin_user: administrator@ad.skoopycorp.com
+        domain_ou_path: "ou=servers,dc=ad,dc=skoopycorp,dc=com"
         domain_admin_password: vagrant
         state: domain
       register: domain_member

@@ -46,15 +46,14 @@
         - WSMAN/DC1
         - WSMAN/dc1.ad.skoopycorp.com
 
-    - name: copy policy defs zip
+    - name: copy files
       win_copy:
-        src: files/PolicyDefinitions.zip
-        dest: C:\PolicyDefinitions.zip
-
-    - name: adm pwd module
-      win_copy:
-        src: AdmPwd.PS.zip
+        src: "{{item}}"
         dest: C:\
+      with_items:
+        - policy_package.zip
+        - AdmPwd.PS.zip
+        - PolicyDefinitions.zip
 
     - name: install laps powershell module
       win_unzip:
@@ -83,16 +82,16 @@
         - Set-AdmPwdComputerSelfPermission -Identity "ou=servers,dc=ad,dc=skoopycorp,dc=com"
       when: domain_deploy.changed
 
+    - name: load GPOs
+      script: ../scripts/Backup-DomainGroupPolicies/Backup-DomainGroupPolicies.ps1 -Path C:\policy_package.zip -Restore
+      when: domain_deploy.changed
+
     - name: set dns ethernet
       win_dns_client:
-        adapter_names: ethernet
+        adapter_names: "{{item}}"
         ipv4_addresses:
           - "{{ansible_ip_addresses[2]}}"
           - 127.0.0.1
-
-    - name: set dns ethernet 2
-      win_dns_client:
-        adapter_names: ethernet 2
-        ipv4_addresses:
-          - "{{ansible_ip_addresses[2]}}"
-          - 127.0.0.1
+      with_items:
+        - ethernet
+        - ethernet 2

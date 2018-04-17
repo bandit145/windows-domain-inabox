@@ -28,6 +28,7 @@ Vagrant.configure("2") do |config|
 	  server2.vm.box = "gusztavvargadr/w16s"
 	  server2.vm.network "private_network", ip: "192.168.50.5"
 	  server2.vm.provision "shell", inline: "C:/vagrant/scripts/ansible_setup.ps1 -ForceNewSSLCert"
+	  server2.vm.synced_folder "/home/phil/git", "C:/git"
 	end
 
 	config.vm.define "ansible_server" do |ansible|
