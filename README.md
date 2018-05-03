@@ -3,7 +3,7 @@ This is a Vagrant project that spins up a small windows domain (two DCs and two 
 
 AD\Administrator password is "vagrant"
 
-Be sure to revursivly clone this repo so it includes the required submodule
+Be sure to recursively clone this repo so it includes the required submodule
 
 `git clone --recursive repo`
 
