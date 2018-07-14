@@ -35,6 +35,7 @@
 
     - name: reboot
       win_reboot:
+        reboot_timeout: "{{reboot_timeout}}"
       when: domain_member.changed
 
     - name: become domain controller
@@ -48,6 +49,7 @@
 
     - name: final reboot
       win_reboot:
+        reboot_timeout: "{{reboot_timeout}}"
       when: domain_con.changed
 
     - pause:

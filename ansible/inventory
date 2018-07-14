@@ -1,5 +1,5 @@
-192.168.50.2 ansible_winrm_server_cert_validation=ignore ansible_connection=winrm ansible_user=Administrator ansible_password=vagrant
-192.168.50.3 ansible_winrm_server_cert_validation=ignore ansible_connection=winrm ansible_user=Administrator ansible_password=vagrant
+192.168.50.2 ansible_winrm_server_cert_validation=ignore ansible_connection=winrm ansible_user=Administrator ansible_password=vagrant reboot_timeout=3600
+192.168.50.3 ansible_winrm_server_cert_validation=ignore ansible_connection=winrm ansible_user=Administrator ansible_password=vagrant reboot_timeout=3600
 
 [windows_servers]
 192.168.50.4 host_name=server1
@@ -9,4 +9,5 @@
 ansible_winrm_server_cert_validation=ignore 
 ansible_connection=winrm
 ansible_user=Administrator
+reboot_timeout=3600
 ansible_password=vagrant

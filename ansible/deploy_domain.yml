@@ -6,9 +6,8 @@
   tasks:
 
     - name: set host name
-      win_shell: if($env:computername -ne "DC1"){Rename-Computer -NewName dc1}
-      args:
-        executable: powershell
+      win_hostname:
+        name: dc1
 
     - name: install features
       win_feature:
@@ -21,6 +20,7 @@
 
     - name: reboot if features installed
       win_reboot:
+        reboot_timeout: "{{reboot_timeout}}"
       when: features.changed
 
     - name: deploy domain
@@ -31,6 +31,7 @@
 
     - name: final reboot
       win_reboot:
+        reboot_timeout: "{{reboot_timeout}}"
       when: domain_deploy.changed
 
     - pause:
