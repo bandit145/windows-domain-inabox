@@ -1,41 +1,39 @@
 ---
 
 - name: configure ansible server
-  hosts: localhost
+  hosts: linux_server
+  become: true
 
   tasks:
 
     - name: rename host
       hostname:
-        name: ansible-server
-
-    - name: add nameservers temporarily
-      shell: echo -e "nameserver 192.168.50.2\nnameserver 192.168.50.3" > /etc/resolv.conf
+        name: "{{host_name}}"
 
     - name: name in host file
       lineinfile:
         path: /etc/hosts
-        line: "{{ansible_enp0s8.ipv4.address}} ansible-server ansible-server.ad.skoopycorp.com"
+        line: "{{ansible_enp0s8.ipv4.address}} {{host_name}} {{host_name}}.ad.skoopycorp.com"
 
     - name: install realmd and deps
       yum:
-        name: "{{item}}"
+        name:
+          - realmd
+          - sssd
+          - gcc
+          - samba-common
+          - samba-common-tools
+          - krb5-workstation
+          - krb5-devel
         state: present
-      with_items:
-        - realmd
-        - sssd
-        - gcc
-        - samba-common
-        - samba-common-tools
-        - krb5-workstation
-        - krb5-devel
-        - python-devel
+      register: realmd_install
 
-    - name: pywinrm[kerberos]
-      pip:
-        name: pywinrm[kerberos]
-        state: present
-        executable: pip2
+    - name: reboot for realmd install
+      reboot:
+      when: realmd_install.changed
+
+    - name: add nameservers temporarily
+      shell: echo -e "nameserver 192.168.50.2\nnameserver 192.168.50.3" > /etc/resolv.conf
 
     - name: join domain
       shell: echo "vagrant" | realm join "AD.SKOOPYCORP.COM" -U Administrator --computer-ou=OU=servers,DC=ad,DC=skoopycorp,DC=com

@@ -9,6 +9,10 @@
       win_hostname:
         name: dc1
 
+    - name: install xdnsserver dsc resource
+      win_psmodule:
+        name: xdnsserver
+
     - name: install features
       win_feature:
         name: "{{item}}"
@@ -16,7 +20,14 @@
       with_items:
         - ad-domain-services
         - dns
+        - rsat-remoteaccess-powershell
       register: features
+
+    - name: disable vagrant nic registration
+      win_shell: Set-DnsClient -InterfaceAlias "ethernet" -RegisterThisConnectionsAddress $false
+      args:
+        executable: powershell
+      when: features.changed
 
     - name: reboot if features installed
       win_reboot:
@@ -96,3 +107,12 @@
       with_items:
         - ethernet
         - ethernet 2
+
+    #- name: remove bad dns record
+    #  win_dsc:
+    #    resource_name: xdnsrecord
+    #    name: dc1
+    #    target: 10.0.2.15
+    #    zone: ad.skoopycorp.com
+    #    type: ARecord
+    #    ensure: absent

@@ -12,6 +12,8 @@
       with_items:
         - ad-domain-services
         - dns
+        - rsat-remoteaccess-powershell
+
 
     - name: set dns on ethernet
       win_dns_client:
@@ -20,9 +22,16 @@
           - 192.168.50.2
           - "{{ansible_ip_addresses[2]}}"
           - 127.0.0.1
+      register: dns_client
       with_items:
         - ethernet
         - ethernet 2
+
+    - name: disable vagrant nic registration
+      win_shell: Set-DnsClient -InterfaceAlias "ethernet" -RegisterThisConnectionsAddress $false
+      args:
+        executable: powershell
+      when: dns_client.changed
 
     - name: join domain
       win_domain_membership:
