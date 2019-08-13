@@ -13,6 +13,8 @@
       win_feature:
         name: "{{item}}"
         state: present
+        include_sub_features: yes
+        include_managment_tools: yes
       with_items:
         - ad-domain-services
         - dns
@@ -34,14 +36,14 @@
         reboot_timeout: "{{reboot_timeout}}"
       when: domain_deploy.changed
 
-    - pause:
-        minutes: 6
-      when: domain_deploy.changed
-
     - name: add wsman service principal to dc1
       win_shell: Set-ADComputer dc1 -ServicePrincipalNames @{Add="{{item}}"}
       args:
         executable: powershell
+      register: spn_add
+      until: not spn_add.failed
+      retries: 30
+      delay: 10
       when: domain_deploy.changed
       with_items:
         - WSMAN/DC1

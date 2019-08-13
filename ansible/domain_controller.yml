@@ -9,6 +9,8 @@
       win_feature:
         name: "{{item}}"
         state: present
+        include_sub_features: yes
+        include_managment_tools: yes
       with_items:
         - ad-domain-services
         - dns
@@ -52,15 +54,15 @@
         reboot_timeout: "{{reboot_timeout}}"
       when: domain_con.changed
 
-    - pause:
-        minutes: 6
-      when: domain_con.changed
-
     - name: add wsman service principal to dc2
       win_shell: Set-ADComputer dc2 -ServicePrincipalNames @{Add="{{item}}"}
       args:
         executable: powershell
       when: domain_con.changed
+      register: spn_add
+      until: not spn_add.failed
+      retries: 30
+      delay: 10
       with_items:
         - WSMAN/DC2
         - WSMAN/dc2.ad.skoopycorp.com
