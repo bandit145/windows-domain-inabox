@@ -9,11 +9,13 @@
       win_feature:
         name: "{{item}}"
         state: present
-        include_sub_features: yes
-        include_managment_tools: yes
-      with_items:
+        include_sub_features: true
+        include_managment_tools: true
+      loop:
         - ad-domain-services
         - dns
+        - rsat
+        - gpmc
 
     - name: set dns on ethernet
       win_dns_client:
@@ -22,7 +24,7 @@
           - 192.168.50.2
           - "{{ansible_ip_addresses[2]}}"
           - 127.0.0.1
-      with_items:
+      loop:
         - ethernet
         - ethernet 2
 
@@ -63,6 +65,6 @@
       until: not spn_add.failed
       retries: 30
       delay: 10
-      with_items:
+      loop:
         - WSMAN/DC2
         - WSMAN/dc2.ad.skoopycorp.com

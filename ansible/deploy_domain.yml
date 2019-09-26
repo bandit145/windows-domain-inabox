@@ -13,11 +13,13 @@
       win_feature:
         name: "{{item}}"
         state: present
-        include_sub_features: yes
-        include_managment_tools: yes
-      with_items:
+        include_sub_features: true
+        include_managment_tools: true
+      loop:
         - ad-domain-services
         - dns
+        - rsat
+        - gpmc
       register: features
 
     - name: reboot if features installed
@@ -45,7 +47,7 @@
       retries: 30
       delay: 10
       when: domain_deploy.changed
-      with_items:
+      loop:
         - WSMAN/DC1
         - WSMAN/dc1.ad.skoopycorp.com
 
@@ -53,7 +55,7 @@
       win_copy:
         src: "{{item}}"
         dest: C:\
-      with_items:
+      loop:
         - policy_package.zip
         - AdmPwd.PS.zip
         - PolicyDefinitions.zip
@@ -80,7 +82,7 @@
       win_shell: "{{item}}"
       args:
         executable: powershell
-      with_items:
+      loop:
         - Update-AdmPwdADSchema
         - Set-AdmPwdComputerSelfPermission -Identity "ou=servers,dc=ad,dc=skoopycorp,dc=com"
       when: domain_deploy.changed
@@ -95,6 +97,6 @@
         ipv4_addresses:
           - "{{ansible_ip_addresses[2]}}"
           - 127.0.0.1
-      with_items:
+      loop:
         - ethernet
         - ethernet 2
