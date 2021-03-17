@@ -15,7 +15,7 @@
     - name: name in host file
       lineinfile:
         path: /etc/hosts
-        line: "{{ansible_enp0s8.ipv4.address}} ansible-server ansible-server.ad.skoopycorp.com"
+        line: "{{ansible_eth1.ipv4.address}} ansible-server ansible-server.ad.skoopycorp.com"
 
     - name: install realmd and deps
       yum:
