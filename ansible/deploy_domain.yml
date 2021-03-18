@@ -2,6 +2,7 @@
 - name: deploy domain controller
   hosts: 192.168.50.2
 
+#get-dnsserverresourcerecord -zonename where {$_.recorddata.ipv4address.ipaddresstostring -match "10"} | remove-dnsserverresourcerecod -zonename 
 
   tasks:
 
@@ -11,12 +12,19 @@
 
     - name: install features
       win_feature:
-        name: "{{item}}"
+        name:
+          - ad-domain-services
+          - dns
+          - rsat
+          - gpmc
         state: present
-      with_items:
-        - ad-domain-services
-        - dns
       register: features
+
+    - name: prevent nat ip from getting registerd in DNS
+      win_shell: Set-DNSClient -RegisterThisConnectionsAddress:$false -InterfaceAlias Ethernet
+      args:
+        executable: powershell
+      when: features.changed
 
     - name: reboot if features installed
       win_reboot:
@@ -67,7 +75,7 @@
         src: C:\PolicyDefinitions.zip
         dest: C:\Windows\SYSVOL\sysvol\ad.skoopycorp.com\policies\
         creates: C:\Windows\SYSVOL\sysvol\ad.skoopycorp.com\policies\PolicyDefinitions
-
+    # check AD:// creates
     - name: add server ou
       win_shell: New-ADOrganizationalUnit -Name servers -Path "dc=ad,dc=skoopycorp,dc=com"
       args:

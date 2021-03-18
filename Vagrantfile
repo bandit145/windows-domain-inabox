@@ -7,13 +7,13 @@ Vagrant.configure("2") do |config|
 	end
 
 	config.vm.define "dc1" do |dc1|
-	  dc1.vm.box = "gusztavvargadr/windows-server"
+	  dc1.vm.box = "gusztavvargadr/windows-server-standard-core"
 	  dc1.vm.network "private_network", ip: "192.168.50.2"
 	  dc1.vm.provision "shell", inline: "C:/vagrant/scripts/ansible_setup.ps1 -ForceNewSSLCert"
 	end
 
 	config.vm.define "dc2" do |dc2|
-	  dc2.vm.box = "gusztavvargadr/windows-server"
+	  dc2.vm.box = "gusztavvargadr/windows-server-standard-core"
 	  dc2.vm.network "private_network", ip: "192.168.50.3"
 	  dc2.vm.provision "shell", inline: "C:/vagrant/scripts/ansible_setup.ps1 -ForceNewSSLCert"
 	end
@@ -39,6 +39,6 @@ Vagrant.configure("2") do |config|
 		ansible.vm.provision "shell", inline: "source venv/bin/activate && cd /vagrant/ansible && ansible-playbook deploy_domain.yml -i inventory"
 		ansible.vm.provision "shell", inline: "source venv/bin/activate && cd /vagrant/ansible && ansible-playbook domain_controller.yml -i inventory"
 		ansible.vm.provision "shell", inline: "source venv/bin/activate && cd /vagrant/ansible && ansible-playbook windows_core.yml -i inventory"
-		ansible.vm.provision "shell", inline: "source venv/bin/activate && cd /vagrant/ansible && sudo ansible-playbook ansible_server.yml"
+		ansible.vm.provision "shell", inline: "source venv/bin/activate && cd /vagrant/ansible && ansible-playbook -b ansible_server.yml -e ansible_python_interpreter=/usr/bin/python3"
 	end
 end

@@ -15,10 +15,17 @@
       with_items:
         - ethernet
         - ethernet 2
+
+    - name: prevent nat ip from getting registerd in DNS
+      win_shell: Set-DNSClient -RegisterThisConnectionsAddress:$false -InterfaceAlias Ethernet
+      args:
+        executable: powershell
   
     - name: add rsat tools
       win_feature:
-        name: RSAT
+        name: 
+          - rsat
+          - gpmc
         state: present
         include_sub_features: yes
         include_managment_tools: yes
