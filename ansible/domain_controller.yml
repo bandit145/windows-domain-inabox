@@ -7,11 +7,19 @@
 
     - name: install features
       win_feature:
-        name: "{{item}}"
+        name:
+          - ad-domain-services
+          - dns
+          - rsat
+          - gpmc
         state: present
-      with_items:
-        - ad-domain-services
-        - dns
+      register: features
+
+    - name: prevent nat ip from getting registerd in DNS
+      win_shell: Set-DNSClient -RegisterThisConnectionsAddress:$false -InterfaceAlias Ethernet
+      args:
+        executable: powershell
+      when: features.changed
 
     - name: set dns on ethernet
       win_dns_client:
@@ -55,6 +63,15 @@
     - pause:
         minutes: 6
       when: domain_con.changed
+
+    - name: remove nat ip from breaking GC and DC communication
+      win_shell: get-dnsserverresourcerecord -zonename {{item}} | where {$_.recorddata.ipv4address.ipaddresstostring -match "10."} | remove-dnsserverresourcerecord -zonename {{item}} -Force
+      args:
+        executable: powershell
+      delegate_to: 192.168.50.2
+      loop:
+        - "_msdcs.ad.skoopycorp.com"
+        - "ad.skoopycorp.com"
 
     - name: add wsman service principal to dc2
       win_shell: Set-ADComputer dc2 -ServicePrincipalNames @{Add="{{item}}"}
