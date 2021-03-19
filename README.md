@@ -1,5 +1,5 @@
 # windows-domain-inabox
-This is a Vagrant project that spins up a small windows domain (two DCs and two member servers)
+This is a Vagrant project that spins up a small windows domain (two DCs and two member servers, all server 2019 now)
 
 AD\Administrator password is "vagrant"
 
