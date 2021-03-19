@@ -7,7 +7,7 @@
 
     - name: rename host
       hostname:
-        name: ansible-server
+        name: ansible-server.ad.skoopycorp.com
 
     - name: add nameservers temporarily
       shell: echo -e "nameserver 192.168.50.2\nnameserver 192.168.50.3" > /etc/resolv.conf
